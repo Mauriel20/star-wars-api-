@@ -2,13 +2,14 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
-from flask import Flask, request, jsonify, url_for
+from flask import Flask, request, jsonify, url_for, json
+import json
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
+from models import db, User, Character, Planets, Favorites
 #from models import Person
 
 app = Flask(__name__)
@@ -56,11 +57,124 @@ def get_with_id(id_get):
     usuario_final= usuario.serialize()
     return jsonify(usuario_final), 200
 
+@app.route('/user', methods=['POST'])
+def add_user():
+   
+    request_body = json.loads(request.data)
+
+    if request_body["name"] == None and request_body["email"] == None and request_body["password"] == None:
+        return "Datos incompletos"
+    else:
+
+        user = User(name=request_body["name"], email=request_body["email"], password=request_body["password"])
+        db.session.add(user)
+        db.session.commit()
+        return "Posteo exitoso"
+    
+@app.route('/user/<int:id>', methods=['DELETE'])
+def delete_user_by_id(id):
+    user = User.query.filter_by(id=id).first_or_404()
+    db.session.delete(user)
+    db.session.commit()
+    return("User has been deleted successfully"), 200
+
+# @app.route('/user/<int:id>', methods=['DELETE'])
+# def delete_user_by_id(id):
+#     user = User.query.filter_by(id=id).first_or_404()
+#     db.session.delete(user)
+#     db.session.commit()
+#     return("User has been deleted successfully"), 200
+
+# para favoritos
+
+@app.route('/favorites', methods=['GET'])
+def get_favorites():
+    favorite = Favorites.query.all()
+    resultado = list(map(lambda x: x.serialize(),favorite))
+    return jsonify(resultado)
+
+@app.route('/favorites/<int:id>', methods=['GET'])
+def get_favorites_by_id(id):
+    favorito = Favorites.query.get(id)
+    favorito_final= favorito.serialize()
+    return jsonify(favorito_final),200 
+
+@app.route('/favorites', methods=['POST'])
+def add_favorites():
+    request_body = json.loads(request.data)
+    # if request_body["name"] == None and request_body["Type"] == None:
+    if request_body["name"] == None:
+        return "Hay datos incompletos, favor completarlos todos!"
+    else:
+        # return request_body["name"]
+        # favorite = Favorites(name=request_body["name"], Type=request_body["Type"])
+        favorite = Favorites(name=request_body["name"])
+        db.session.add(favorite)
+        db.session.commit()
+        return "Posteo exitoso"
+
+# def add_user():
+   
+#     request_body = json.loads(request.data)
+
+#     if request_body["name"] == None and request_body["email"] == None and request_body["password"] == None:
+#         return "Datos incompletos"
+#     else:
+
+#         user = User(name=request_body["name"], email=request_body["email"], password=request_body["password"])
+#         db.session.add(user)
+#         db.session.commit()
+#         return "Posteo exitoso"
 
 
 
 
 
+
+@app.route('/favorites/<int:id>', methods=['DELETE'])
+def delete_favorites_by_id(id):
+    favorite = Favorites.query.filter_by(id=id).first_or_404()
+    db.session.delete(favorite)
+    db.session.commit()
+    return("User has been deleted successfully"), 200
+
+# para DE CHARACTER
+
+@app.route('/character', methods=['GET'])
+def get_character():
+    character = Character.query.all()
+
+    resultado = list(map(lambda x: x.serialize(),character))
+    return jsonify(resultado)
+
+@app.route('/character/<int:id>', methods=['GET'])
+# def get_character_by_id(id):
+#     character = Character.query.filter_by(id=id).first_or_404()
+#     return jsonify(character.serialize()) 
+def get_character_by_id(id):
+    character = Character.query.get(id)
+    character_final= character.serialize()
+    return jsonify(character_final),200 
+
+
+
+# Para PLANETS
+
+@app.route('/planets', methods=['GET'])
+def get_planet():
+    planet = Planets.query.all()
+    resultado = list(map(lambda x: x.serialize(), planet))
+    return jsonify(resultado)
+
+@app.route('/planets/<int:id>', methods=['GET'])
+# def get_planet_by_id(id):
+#     planet = Planets.query.filter_by(id=id).first_or_404() 
+#     return jsonify(planet.serialize())
+
+def get_planets_by_id(id):
+    planets = Planets.query.get(id)
+    planets_final = planets.serialize()
+    return jsonify(planets_final),200 
 
 
 # this only runs if `$ python src/main.py` is executed
