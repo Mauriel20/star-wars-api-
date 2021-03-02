@@ -17,3 +17,13 @@ def setup_admin(app):
 
     # You can duplicate that line to add mew models
     # admin.add_view(ModelView(YourModelName, db.session))
+    
+    
+ usuario1 = 
+            {
+                "id" : 1,
+                "email" : "John@prueva",
+                "password" : "Jackson",
+                "is_active" : true,
+                "favorites" : ""
+            },

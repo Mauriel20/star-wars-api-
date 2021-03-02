@@ -30,14 +30,38 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-@app.route('/user', methods=['GET'])
-def handle_hello():
+# Para user 
+
+# get ejemplo explicado por San Tomas y amigos maravillosos jajaj xd
+@app.route('/ejemplo', methods=['GET'])
+def get_user():
 
     response_body = {
         "msg": "Hello, this is your GET /user response "
     }
 
     return jsonify(response_body), 200
+
+# mi primer get a pata 
+@app.route('/user', methods=['GET'])
+def get_users():
+    user = User.query.all()
+    mapeo= list(map(lambda x: x.serialize(),user))
+    return jsonify(mapeo), 200
+
+# Get por id
+@app.route('/user/<int:id_get>', methods=['GET'])
+def get_with_id(id_get):
+    usuario = User.query.get(id_get)
+    usuario_final= usuario.serialize()
+    return jsonify(usuario_final), 200
+
+
+
+
+
+
+
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
