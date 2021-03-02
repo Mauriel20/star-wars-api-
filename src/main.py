@@ -156,7 +156,26 @@ def get_character_by_id(id):
     character_final= character.serialize()
     return jsonify(character_final),200 
 
+@app.route('/character', methods=['POST'])
+def add_character():
+    request_body = json.loads(request.data)
+    # if request_body["name"] == None and request_body["Type"] == None:
+    if request_body["name"] == None and request_body["hair_color"] == None and request_body["skin_color"] == None and request_body["eyes_color"] == None and request_body["birth_day"] == None:
+        return "Hay datos incompletos, favor completarlos todos!"
+    else:
+        # return request_body["name"]
+        # favorite = Favorites(name=request_body["name"], Type=request_body["Type"])
+        character = Character(name=request_body["name"], hair_color = request_body["hair_color"], skin_color = request_body["skin_color"], eyes_color = request_body["eyes_color"], birth_day = request_body["birth_day"]    )
+        db.session.add(character)
+        db.session.commit()
+        return "Posteo exitoso"
 
+# @app.route('/character/<int:id>', methods=['DELETE'])
+# def delete_character_by_id(id):
+#     character = Character.query.filter_by(id=id).first_or_404()
+#     db.session.delete(character)
+#     db.session.commit()
+#     return("User has been deleted successfully"), 200
 
 # Para PLANETS
 
@@ -166,15 +185,36 @@ def get_planet():
     resultado = list(map(lambda x: x.serialize(), planet))
     return jsonify(resultado)
 
-@app.route('/planets/<int:id>', methods=['GET'])
+@app.route('/planets/<int:id_planet>', methods=['GET'])
 # def get_planet_by_id(id):
 #     planet = Planets.query.filter_by(id=id).first_or_404() 
 #     return jsonify(planet.serialize())
 
-def get_planets_by_id(id):
-    planets = Planets.query.get(id)
+def get_planets_by_id(id_planet):
+    planets = Planets.query.get(id_planet)
     planets_final = planets.serialize()
     return jsonify(planets_final),200 
+
+@app.route('/planets', methods=['POST'])
+def add_planets():
+    request_body = json.loads(request.data)
+    # if request_body["name"] == None and request_body["Type"] == None:
+    if request_body["name"] == None and request_body["rotation_period"] == None and request_body["orbital_period"] == None and request_body["terrain"] == None:
+        return "Hay datos incompletos, favor completarlos todos!"
+    else:
+        # return request_body["name"]
+        # favorite = Favorites(name=request_body["name"], Type=request_body["Type"])
+        planets = Planets(name=request_body["name"], rotation_period = request_body["rotation_period"], orbital_period = request_body["orbital_period"], terrain = request_body["terrain"])
+        db.session.add(planets)
+        db.session.commit()
+        return "Posteo exitoso"
+    
+# @app.route('/planets/<int:id>', methods=['DELETE'])
+# def delete_planets_by_id(id):
+#     planets = Planets.query.filter_by(id=id).first_or_404()
+#     db.session.delete(planets)
+#     db.session.commit()
+#     return("User has been deleted successfully"), 200
 
 
 # this only runs if `$ python src/main.py` is executed
